@@ -1,0 +1,38 @@
+services:
+
+  zabbix-proxy-4:
+    image: zabbix/zabbix-proxy-mysql:alpine-4.0-latest
+    container_name: zabbix-proxy-4
+    hostname: zabbix-proxy-4
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+      DB_SERVER_HOST: zabbix-proxy-mariadb-4
+      MYSQL_DATABASE: zabbix
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbixpass
+      ZBX_HOSTNAME: "zabbix-proxy-4"
+      ZBX_SERVER_HOST: "zabbix-server-name"
+    depends_on:
+      - zabbix-proxy-mariadb-4
+    ports:
+      - 10051:10051
+    networks:
+      - default
+
+  zabbix-proxy-mariadb-4:
+    image: mariadb
+    container_name: zabbix-proxy-mariadb-4
+    hostname: zabbix-proxy-mariadb-4
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: secret123Zabbix
+      MYSQL_DATABASE: zabbix
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbixpass
+    networks:
+      - default
+    volumes:
+      - /opt/zabbix-proxy/mariadb/data:/var/lib/mysql
